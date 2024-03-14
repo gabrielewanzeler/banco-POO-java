@@ -4,12 +4,12 @@ import java.util.*;
 
 public class PrincipalConta {
     private static final int OPCAO_SAIR = 0;
-    private static final int OPCAO_CRIAR_CLIENTE = 1;
+    private static final int OPCAO_CADASTRAR_CLIENTE = 1;
     private static final int OPCAO_VER_LISTA_CLIENTES = 2;
-    private static final int OPCAO_VER_DADOS_CLIENTE = 3;
-    private static final int OPCAO_DEPOSITAR = 4;
-    private static final int OPCAO_CRIAR_CONTA = 5;
-    private static final int OPCAO_TRANSFERENCIA = 6;
+    private static final int OPCAO_DEPOSITAR = 3;
+    private static final int OPCAO_TRANSFERENCIA = 4;
+    private static final int OPCAO_ENTRAR_CONTA = 5;
+
 
     public static void main(String[] args) {
 
@@ -22,25 +22,21 @@ public class PrincipalConta {
                 opcao = Integer.parseInt(in.readLine());
 
                 switch (opcao) {
-                    case OPCAO_CRIAR_CLIENTE:
+                    case OPCAO_CADASTRAR_CLIENTE:
                         criarCliente(in, listaClientes);
                         break;
                     case OPCAO_VER_LISTA_CLIENTES:
                         exibirListaClientes(listaClientes);
                         break;
-                    case OPCAO_VER_DADOS_CLIENTE:
-                        verDadosCliente(in, listaClientes);
-                        break;
                     case OPCAO_DEPOSITAR:
                         depositar(in, listaClientes);
                         break;
-                    case OPCAO_CRIAR_CONTA:
-                        criarContaParaClienteExistente(in, listaClientes);
-                        break;
-                        case OPCAO_TRANSFERENCIA:
+                    case OPCAO_TRANSFERENCIA:
                         transferirEntreContas(in, listaClientes);
                         break;                    
-
+                    case OPCAO_ENTRAR_CONTA:
+                        entrarNaConta(in, listaClientes);
+                        break;
                     case OPCAO_SAIR:
                         System.out.println("\nSaindo...");
                         break;
@@ -58,10 +54,9 @@ public class PrincipalConta {
         System.out.println("\n\nInforme a operação desejada:");
         System.out.println("\n1 - Cadastrar cliente");
         System.out.println("2 - Ver lista de clientes");
-        System.out.println("3 - Ver dados da conta de um(a) cliente");
-        System.out.println("4 - Realizar depósito");
-        System.out.println("5 - Criar conta para um cliente já cadastrado");
-        System.out.println("6 - Realizar Transferência");
+        System.out.println("3 - Realizar depósito");
+        System.out.println("4 - Realizar Transferência");
+        System.out.println("5 - Entrar em uma conta");
         System.out.println("0 - Sair");
         System.out.print("\nDigite uma opção: ");
     }
@@ -81,6 +76,7 @@ public class PrincipalConta {
 
         String tipoConta;
         do {
+            System.out.println("\nVamos criar uma conta?");
             System.out.println("\nQual tipo de conta deseja criar?");
             System.out.println("1 - Conta Corrente");
             System.out.println("2 - Conta Poupança");
@@ -120,10 +116,95 @@ public class PrincipalConta {
         System.out.print("\nAgora informe a quantidade que deseja depositar na conta: ");
         double valor = Double.parseDouble(in.readLine());
         c.Depositar(valor);
-        System.out.println("\nValor depositado!");
+
+        if (valor !=0) {
+            System.out.println("\nValor de R$ " + valor + " depositado!");
+        }
+        else {
+            System.out.println("\nNenhum valor depositado!");
+        }
+        
         cliente.incluirConta(c);
     }    
 
+    private static void entrarNaConta(BufferedReader in, List<Cliente> listaClientes) throws IOException {
+        System.out.println("\nEntre em uma conta já criada!");
+        System.out.print("\nInforme o nome do cliente: ");
+        String nome = in.readLine();
+    
+        boolean clienteEncontrado = false;
+        for (Cliente cliente : listaClientes) {
+            if (nome.equalsIgnoreCase(cliente.getNome())) {
+                int opcao;
+                do {
+                    System.out.println("\nBem-vindo(a), " + cliente.getNome() + "!");
+                    System.out.println("1 - Ver dados da conta");
+                    System.out.println("2 - Depositar");
+                    System.out.println("3 - Transferência entre contas");
+                    System.out.println("4 - Criar mais uma conta em seu nome");
+                    System.out.println("0 - Sair da conta");
+                    System.out.print("\nEscolha uma opção: ");
+                    opcao = Integer.parseInt(in.readLine());
+
+                    switch (opcao) {
+                        case 1:
+                            System.out.println("\nDados do cliente:");
+                            System.out.println("Nome: " + cliente.getNome());
+                            System.out.println("E-mail: " + cliente.getEmail());
+                            System.out.println("Número de telefone: " + cliente.getTelefone());
+                            System.out.println("Saldo Geral: R$ " + cliente.getSaldoGeral());
+                
+                            System.out.println("\nContas do cliente:");
+                            for (Conta conta : cliente.getListaContas()) {
+                                System.out.println("Número da conta: " + conta.getNumeroConta());
+                                if (conta instanceof ContaCorrente) {
+                                    System.out.println("Tipo de conta: Conta Corrente");
+                                    System.out.println("Saldo: R$ " + conta.getSaldo());
+                                } else if (conta instanceof ContaPoupanca) {
+                                    System.out.println("Tipo de conta: Conta Poupança");
+                                    System.out.println("Saldo: R$ " + conta.getSaldo());
+                                }
+                                System.out.println();
+                            }
+                            break;
+                        case 2:
+                            depositar(in, listaClientes);
+                            break;
+                        case 3:
+                            transferirEntreContas(in, listaClientes);
+                            break;
+                        case 4:
+                            String tipoConta;
+                            do {
+                                System.out.println("\nVamos criar uma conta?");
+                                System.out.println("\nQual tipo de conta deseja criar?");
+                                System.out.println("1 - Conta Corrente");
+                                System.out.println("2 - Conta Poupança");
+                                System.out.println("0 - Sair criar conta");
+                
+                                tipoConta = in.readLine();
+                                if (!tipoConta.equals("0")) {
+                                    criarConta(in, cliente, tipoConta);
+                                }
+                            } while (!tipoConta.equals("0"));
+                            break;
+                        case 0:
+                            System.out.println("Saindo da conta...");
+                            break;
+                        default:
+                            System.out.println("Opção inválida. Tente novamente.");
+                            break;
+                    }
+                } while (opcao != 0);
+
+                clienteEncontrado = true;
+                break;
+            }
+        }
+        if (!clienteEncontrado) {
+            System.out.println("\nCliente não encontrado!");
+        }
+    }
 
     private static void exibirListaClientes(List<Cliente> listaClientes) {
         System.out.println("\nLista de todos os clientes cadastrados: \n");
@@ -133,46 +214,8 @@ public class PrincipalConta {
         }
     }
 
-    private static void verDadosCliente(BufferedReader in, List<Cliente> listaClientes) throws IOException {
-        System.out.print("\nInforme o nome do cliente: ");
-        String nome = in.readLine();
-        System.out.print("Digite o e-mail do cliente: ");
-        String email = in.readLine();
-
-        boolean clienteEncontrado = false;
-        for (Cliente cliente : listaClientes) {
-            if (nome.equalsIgnoreCase(cliente.getNome()) && email.equalsIgnoreCase(cliente.getEmail())) {
-                System.out.println("\nDados do cliente:");
-                System.out.println("Nome: " + cliente.getNome());
-                System.out.println("E-mail: " + cliente.getEmail());
-                System.out.println("Número de telefone: " + cliente.getTelefone());
-                System.out.println("Saldo Geral: R$ " + cliente.getSaldoGeral());
-    
-                System.out.println("\nContas do cliente:");
-                for (Conta conta : cliente.getListaContas()) {
-                    System.out.println("Número da conta: " + conta.getNumeroConta());
-                    if (conta instanceof ContaCorrente) {
-                        System.out.println("Tipo de conta: Conta Corrente");
-                        System.out.println("Saldo: R$ " + conta.getSaldo());
-                    } else if (conta instanceof ContaPoupanca) {
-                        System.out.println("Tipo de conta: Conta Poupança");
-                        System.out.println("Saldo: R$ " + conta.getSaldo());
-                    }
-                    System.out.println();
-                }
-    
-                clienteEncontrado = true;
-                break;
-            }
-        }
-    
-        if (!clienteEncontrado) {
-            System.out.println("\nCliente não encontrado!");
-        }
-    }
-
     private static void depositar(BufferedReader in, List<Cliente> listaClientes) throws IOException {
-        System.out.print("\nInforme o nome do cliente: ");
+        System.out.print("\nInforme o nome do cliente da conta para o depósito: ");
         String nomeCliente = in.readLine();
     
         System.out.print("Informe o número da conta: ");
@@ -198,41 +241,7 @@ public class PrincipalConta {
     
         if (!clienteEncontrado) {
             System.out.println("\nCliente ou número da conta não encontrado!");
-            System.out.println("Valor não depositado!");
-        }
-    }
-
-    private static void criarContaParaClienteExistente(BufferedReader in, List<Cliente> listaClientes) throws IOException {
-        System.out.print("\nInforme o nome do cliente: ");
-        String nomeCliente = in.readLine();
-    
-        System.out.print("Informe o e-mail do cliente: ");
-        String emailCliente = in.readLine();
-    
-        boolean clienteEncontrado = false;
-        for (Cliente cliente : listaClientes) {
-            if (nomeCliente.equalsIgnoreCase(cliente.getNome()) && emailCliente.equalsIgnoreCase(cliente.getEmail())) {
-                System.out.println("Cliente encontrado!");
-                String tipoConta;
-                do {
-                    System.out.println("\nQual tipo de conta deseja criar?");
-                    System.out.println("1 - Conta Corrente");
-                    System.out.println("2 - Conta Poupança");
-                    System.out.println("0 - Sair criar conta");
-    
-                    tipoConta = in.readLine();
-                    if (!tipoConta.equals("0")) {
-                        criarConta(in, cliente, tipoConta);
-                    }
-                } while (!tipoConta.equals("0"));
-    
-                clienteEncontrado = true;
-                break;
-            }
-        }
-    
-        if (!clienteEncontrado) {
-            System.out.println("\nCliente não encontrado!");
+            System.out.println("\nValor não depositado!");
         }
     }
     
@@ -280,7 +289,7 @@ public class PrincipalConta {
             System.out.println("\nSaldo insuficiente na conta de origem!");
             return;
         }
-    
+
         contaOrigem.sacar(valorTransferencia);
         contaDestino.Depositar(valorTransferencia);
 
