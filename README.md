@@ -1,0 +1,1 @@
+Utilizando técnicas e fundamentos da programação orientada a objetos (POO), fiz esse projeto totalmente em Java onde o mesmo simula um banco virtual simples, capaz de cadastrar cliente, criar conta corrente ou poupança, ver lista de clientes, realizar depósito e ver os dados da conta do cliente.
