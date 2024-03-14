@@ -19,4 +19,6 @@ abstract class Conta {
     public int getNumeroConta() {
         return numeroConta;
     }
+
+    public abstract void sacar(double valor);
 }

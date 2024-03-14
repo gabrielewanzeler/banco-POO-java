@@ -12,11 +12,21 @@ class ContaCorrente extends Conta {
         this.numeroConta = numeroConta;
     }
 
-    @Override
     public double getSaldo() {
+        
         double saldoCalculado = super.Saldo;
         saldoCalculado -= saldoCalculado * 0.0038;
         saldoCalculado += limite;
         return saldoCalculado;
     }
+
+    public void sacar(double valor) {
+        if (valor <= getSaldo() + limite) {
+            Saldo -= valor;
+        } else {
+            System.out.println("Saldo insuficiente!");
+        }
+    }
+
 }
+

@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 
@@ -8,6 +9,7 @@ public class PrincipalConta {
     private static final int OPCAO_VER_DADOS_CLIENTE = 3;
     private static final int OPCAO_DEPOSITAR = 4;
     private static final int OPCAO_CRIAR_CONTA = 5;
+    private static final int OPCAO_TRANSFERENCIA = 6;
 
     public static void main(String[] args) {
 
@@ -35,6 +37,10 @@ public class PrincipalConta {
                     case OPCAO_CRIAR_CONTA:
                         criarContaParaClienteExistente(in, listaClientes);
                         break;
+                        case OPCAO_TRANSFERENCIA:
+                        transferirEntreContas(in, listaClientes);
+                        break;                    
+
                     case OPCAO_SAIR:
                         System.out.println("\nSaindo...");
                         break;
@@ -55,6 +61,7 @@ public class PrincipalConta {
         System.out.println("3 - Ver dados da conta de um(a) cliente");
         System.out.println("4 - Realizar depósito");
         System.out.println("5 - Criar conta para um cliente já cadastrado");
+        System.out.println("6 - Realizar Transferência");
         System.out.println("0 - Sair");
         System.out.print("\nDigite uma opção: ");
     }
@@ -227,6 +234,76 @@ public class PrincipalConta {
         if (!clienteEncontrado) {
             System.out.println("\nCliente não encontrado!");
         }
+    }
+    
+    private static void transferirEntreContas(BufferedReader in, List<Cliente> listaClientes) throws IOException {
+        System.out.print("Informe o nome do cliente que está transferindo o dinheiro: ");
+        String nomeOrigem = in.readLine();
+
+        Cliente clienteOrigem = encontrarClientePorNome(listaClientes, nomeOrigem);
+        if (clienteOrigem == null) {
+            System.out.println("\nCliente não encontrado!");
+            return;
+        }
+    
+        System.out.print("Informe o número da conta de origem: ");
+        int numeroContaOrigem = Integer.parseInt(in.readLine());
+
+        Conta contaOrigem = encontrarContaPorNumero(clienteOrigem, numeroContaOrigem);
+        if (contaOrigem == null) {
+            System.out.println("\nConta de origem não encontrada!");
+            return;
+        }
+    
+        System.out.print("Informe o nome do cliente que está recebendo o dinheiro: ");
+        String nomeDestino = in.readLine();
+
+        Cliente clienteDestino = encontrarClientePorNome(listaClientes, nomeDestino);
+        if (clienteDestino == null) {
+            System.out.println("\nCliente de destino não encontrado!");
+            return;
+        }
+
+        System.out.print("Informe o número da conta de destino: ");
+        int numeroContaDestino = Integer.parseInt(in.readLine());
+
+        Conta contaDestino = encontrarContaPorNumero(clienteDestino, numeroContaDestino);
+        if (contaDestino == null) {
+            System.out.println("\nConta de destino não encontrada!");
+            return;
+        }
+
+        System.out.print("Informe o valor a ser transferido: ");
+        double valorTransferencia = Double.parseDouble(in.readLine());
+
+        if (contaOrigem.getSaldo() < valorTransferencia) {
+            System.out.println("\nSaldo insuficiente na conta de origem!");
+            return;
+        }
+    
+        contaOrigem.sacar(valorTransferencia);
+        contaDestino.Depositar(valorTransferencia);
+
+        System.out.println("\nTransferência realizada com sucesso!");
+    }
+    
+    private static Cliente encontrarClientePorNome(List<Cliente> listaClientes, String nome) {
+        for (Cliente cliente : listaClientes) {
+            if (cliente.getNome().equalsIgnoreCase(nome)) {
+                return cliente;
+            }
+        }
+        return null;
+    }
+    
+    // Método auxiliar para encontrar uma conta em um cliente pelo número da conta
+    private static Conta encontrarContaPorNumero(Cliente cliente, int numeroConta) {
+        for (Conta conta : cliente.getListaContas()) {
+            if (conta.getNumeroConta() == numeroConta) {
+                return conta;
+            }
+        }
+        return null;
     }
     
 }
